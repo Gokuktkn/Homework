@@ -133,9 +133,9 @@ app.put("/post", async (req, res) => {
 });
 
 //Bai 4
-app.post("/comment", async (req, res) =>{
+app.post("/comment", async (req, res) => {
     try {
-        const {postId, content, authorId} = req.body;
+        const { postId, content, authorId } = req.body;
         const confirmUserId = await getInfo("id", authorId, "http://localhost:5000/users");
         const confirmPostId = await getInfo("id", postId, "http://localhost:5000/posts");
         if (!confirmPostId) {
@@ -173,7 +173,7 @@ app.put("/comment", async (req, res) => {
             if (isAuthorValid) {
                 const updateData = {
                     content: updateContent,
-                    postId : authorData.postId,
+                    postId: authorData.postId,
                     authorId
                 }
                 const postRes = await axios.put(`http://localhost:5000/comments/${commentId}`, updateData);
@@ -197,6 +197,58 @@ app.put("/comment", async (req, res) => {
         });
     }
 });
+
+//Bai 6
+app.get("/comment", async (req, res) => {
+    try {
+        const { postId } = req.query;
+        const commentRes = await axios.get("http://localhost:5000/comments");
+        const commentData = commentRes.data;
+        const commentInfo = commentData.filter((item) => item.postId === postId);
+        if (commentInfo.length > 0) {
+            return res.json({
+                message: "Get all comments successful",
+                results: commentInfo
+            });
+        } else {
+            return res.json({
+                message: "Post doesn't has any comment"
+            });
+        }
+    } catch (error) {
+        return res.json({
+            message: "Error: " + error.message,
+        });
+    }
+});
+
+//Bai 7
+
+//Bai 8
+app.get("/post", async (req, res) => {
+    try {
+        const { postId } = req.query;
+        const postData = {
+            post: {},
+            comments: []
+        };
+
+        postData.post = (await axios.get(`http://localhost:5000/posts/${postId}`)).data;
+
+        const commentRes = await axios.get("http://localhost:5000/comments");
+        const commentData = commentRes.data;
+        postData.comments = commentData.filter((item) => item.postId === postId);
+        return res.json({
+            message: "Get post and comments successful",
+            results: postData
+        });
+    } catch (error) {
+        return res.json({
+            message: "Error: " + error.message,
+        });
+    }
+});
+
 app.listen(PORT, (err) => {
     if (err) {
         console.log(`Error ${err.message}`);

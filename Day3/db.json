@@ -54,6 +54,12 @@
       "postId": "PS001",
       "authorId": "US001",
       "id": "CMT6234"
+    },
+    {
+      "id": "CMT4561",
+      "postId": "PS2052",
+      "content": "Nice",
+      "authorId": "US001"
     }
   ]
 }
